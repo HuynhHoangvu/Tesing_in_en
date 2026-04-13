@@ -5,11 +5,117 @@
     "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
 }
 
-html,
-body {
-  @apply bg-white dark:bg-gray-950;
-
-  @media (prefers-color-scheme: dark) {
-    color-scheme: dark;
-  }
+html, body {
+  background: linear-gradient(160deg, #fffef9 0%, #fdf5d8 50%, #faf0c0 100%);
+  min-height: 100vh;
+  color: #1a1200;
+  font-family: var(--font-sans);
 }
+
+/* ── Layout helpers ── */
+.fly-bg {
+  background: linear-gradient(160deg, #fffef9 0%, #fdf5d8 50%, #faf0c0 100%);
+  min-height: 100vh;
+}
+.fly-card {
+  background: #ffffff;
+  border: 1px solid #ede5cc;
+}
+.fly-header {
+  display: flex;
+  align-items: center;
+  padding: 12px 20px;
+  background: rgba(255,255,255,0.95);
+  border-bottom: 1px solid #ede5cc;
+  backdrop-filter: blur(8px);
+}
+
+/* Logo: remove white bg visually with multiply */
+.fly-logo    { width: 140px; height: auto; display: block; mix-blend-mode: multiply; }
+.fly-logo-sm { width:  80px; height: auto; display: block; mix-blend-mode: multiply; }
+
+/* ── Inputs ── */
+.fly-input {
+  width: 100%;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  padding: 12px 16px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s, box-shadow 0.15s;
+  background: #fff;
+  color: #1a1200;
+  font-family: var(--font-sans);
+}
+.fly-input:focus {
+  border-color: #C8960C;
+  box-shadow: 0 0 0 3px rgba(200,150,12,0.12);
+}
+
+/* ── Buttons ── */
+.fly-btn-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font-size: 15px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #E5B800, #C8960C);
+  color: #3b2000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 14px rgba(200,150,12,0.3);
+  text-decoration: none;
+  font-family: var(--font-sans);
+}
+.fly-btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, #C8960C, #9a6f00);
+  transform: translateY(-1px);
+  box-shadow: 0 6px 18px rgba(200,150,12,0.4);
+}
+.fly-btn-primary:disabled { opacity: 0.5; cursor: not-allowed; }
+
+.fly-btn-secondary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #e5e7eb;
+  border-radius: 999px;
+  padding: 12px 24px;
+  font-size: 14px;
+  font-weight: 600;
+  background: #f9fafb;
+  color: #1a1200;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  font-family: var(--font-sans);
+}
+.fly-btn-secondary:hover { background: #f3f4f6; transform: translateY(-1px); }
+
+/* ── Shadows / colour tokens ── */
+.shadow-gold        { box-shadow: 0 10px 30px rgba(180,130,0,0.10); }
+.text-gold          { color: #C8960C; }
+.text-gold-dark     { color: #9a6f00; }
+.text-ink           { color: #1a1200; }
+.text-slate         { color: #7a6a3a; }
+.bg-gold            { background-color: #C8960C; }
+.bg-gold-soft       { background-color: #fdf3d0; }
+.border-gold        { border-color: #C8960C; }
+.border-gold-border { border-color: #ede5cc; }
+
+/* ── Print ── */
+@media print {
+  .fly-header, .fly-btn-primary, .fly-btn-secondary { display: none !important; }
+  body { background: white !important; }
+  .fly-card { box-shadow: none !important; border: 1px solid #ddd !important; }
+}
+
+/* ── Animations ── */
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50%       { opacity: 0.5; }
+}
+.animate-pulse { animation: pulse 1.5s ease-in-out infinite; }
