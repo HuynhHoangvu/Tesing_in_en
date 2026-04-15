@@ -7,7 +7,7 @@ export const adminCookie = createCookie('admin-session', {
   secrets: [process.env.COOKIE_SECRET || 'fly-immigration-secret-2025'],
 });
 
-const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Fly@Admin2025';
+const ADMIN_PASSWORD = process.env.ADMIN_PASSWORD || 'Fly2026$$';
 
 export async function requireAdmin(request: Request): Promise<void> {
   const cookieHeader = request.headers.get('Cookie');
