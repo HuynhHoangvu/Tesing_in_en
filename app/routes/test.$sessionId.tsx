@@ -63,15 +63,21 @@ export async function action({ request, params }: Route.ActionArgs) {
   console.log('[action] rows từ DB:', rows.length, '| SMTP_USER:', process.env.SMTP_USER || 'CHƯA SET');
   if (rows.length) {
     console.log('[action] Gọi sendResultEmail...');
-    sendResultEmail({
-      sessionId: params.sessionId!, studentName: rows[0].student_name,
-      studentEmail: rows[0].student_email, studentPhone: rows[0].student_phone,
-      listeningScore, readingScore, totalScore, pct, level, answers,
-      timeTakenSeconds: timeTaken, submittedAt,
-    }).catch(err => console.error('[email] error:', err));
+    try {
+      await sendResultEmail({
+        sessionId: params.sessionId!, studentName: rows[0].student_name,
+        studentEmail: rows[0].student_email, studentPhone: rows[0].student_phone,
+        listeningScore, readingScore, totalScore, pct, level, answers,
+        timeTakenSeconds: timeTaken, submittedAt,
+      });
+      return redirect(`/result/${params.sessionId}?email=success`);
+    } catch (err) {
+      console.error('[email] error:', err);
+      return redirect(`/result/${params.sessionId}?email=error`);
+    }
   }
 
-  throw redirect(`/result/${params.sessionId}`);
+  return redirect(`/result/${params.sessionId}`);
 }
 
 // ── State machine ─────────────────────────────────────────────────────────────

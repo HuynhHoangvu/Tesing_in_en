@@ -11,14 +11,17 @@ export function meta({}: Route.MetaArgs) {
   return [{ title: 'Kết quả – Fly Immigration Placement Test' }];
 }
 
-export async function loader({ params }: Route.LoaderArgs) {
+export async function loader({ params, request }: Route.LoaderArgs) {
   await initDB();
+  const url = new URL(request.url);
+  const emailStatus = url.searchParams.get('email');
+
   const rows = await query<TestSession>(
     'SELECT * FROM test_sessions WHERE id = $1',
     [params.sessionId]
   );
   if (!rows.length) throw new Response('Not found', { status: 404 });
-  return { session: rows[0] };
+  return { session: rows[0], emailStatus };
 }
 
 // ── Helpers ───────────────────────────────────────────────────────────────────
@@ -148,6 +151,18 @@ export default function ResultPage({ loaderData }: Route.ComponentProps) {
 
       <main className="flex-1 px-4 py-8 overflow-y-auto">
         <div className="max-w-2xl mx-auto space-y-5">
+          {loaderData.emailStatus === 'success' && (
+            <div className="bg-green-50 border border-green-200 text-green-700 px-4 py-3 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
+              <span className="text-xl">✅</span>
+              <div className="text-sm font-medium">Kết quả đã được gửi tới email của trường!</div>
+            </div>
+          )}
+          {loaderData.emailStatus === 'error' && (
+            <div className="bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-2xl flex items-center gap-3 animate-in fade-in slide-in-from-top-4 duration-500">
+              <span className="text-xl">⚠️</span>
+              <div className="text-sm font-medium pr-8">Có lỗi khi gửi email kết quả. Bạn vui lòng chụp ảnh màn hình lại nhé!</div>
+            </div>
+          )}
 
           {/* Hero card */}
           <div className="fly-card rounded-3xl p-8 shadow-gold text-center">
