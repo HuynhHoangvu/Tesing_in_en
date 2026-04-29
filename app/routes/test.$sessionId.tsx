@@ -10,6 +10,49 @@ import {
   calcLevel,
 } from '~/data/questions';
 
+const EXAM_NAME = 'Placement Test';
+
+async function notifyExamSubmitted(payload: {
+  studentName: string;
+  score: number;
+  submittedAt: Date;
+}) {
+  const webhookUrl = process.env.FLYVISA_NOTIFY_URL;
+  if (!webhookUrl) return;
+
+  const token = process.env.FLYVISA_WEBHOOK_TOKEN;
+  const headers: Record<string, string> = {
+    'Content-Type': 'application/json',
+  };
+  if (token) headers['x-webhook-token'] = token;
+
+  const submittedAtText = new Intl.DateTimeFormat('vi-VN', {
+    year: 'numeric',
+    month: '2-digit',
+    day: '2-digit',
+    hour: '2-digit',
+    minute: '2-digit',
+    second: '2-digit',
+    hour12: false,
+  }).format(payload.submittedAt);
+
+  try {
+    await fetch(webhookUrl, {
+      method: 'POST',
+      headers,
+      body: JSON.stringify({
+        studentName: payload.studentName,
+        examName: EXAM_NAME,
+        score: payload.score,
+        submittedAt: submittedAtText,
+        sender: 'Fly Test System',
+      }),
+    });
+  } catch (error) {
+    console.error('[notification] exam-submitted webhook failed:', error);
+  }
+}
+
 // ── Loader ────────────────────────────────────────────────────────────────────
 
 export async function loader({ params }: Route.LoaderArgs) {
@@ -62,6 +105,11 @@ export async function action({ request, params }: Route.ActionArgs) {
   );
   console.log('[action] rows từ DB:', rows.length, '| SMTP_USER:', process.env.SMTP_USER || 'CHƯA SET');
   if (rows.length) {
+    await notifyExamSubmitted({
+      studentName: rows[0].student_name,
+      score: pct,
+      submittedAt,
+    });
     console.log('[action] Gọi sendResultEmail...');
     try {
       await sendResultEmail({
